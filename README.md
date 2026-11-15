@@ -83,3 +83,6 @@ Application code: [MIT](LICENSE). The original user-supplied scaffold and subseq
 - [Force-stop behavior](https://developer.android.com/about/versions/15/behavior-changes-all#stopped-state)
 - [Battery restrictions](https://developer.android.com/topic/performance/background-optimization#user-initiated-restrictions)
 - [User stopping foreground services](https://developer.android.com/develop/background-work/services/fgs/handle-user-stopping)
+
+### Personal setup
+The Personal screen groups setup into four cards: Android restricted settings, permissions, battery usage and Work pairing. If you installed the APK manually, begin with **Open Chrome Bridge app info**, then use **⋮ → Allow restricted settings** if Android offers it. Return to Chrome Bridge to grant its requested permissions. This shortcut does not change any settings itself, and the app does not claim it can verify the restricted-settings switch. Battery Unrestricted is also a manual check. Live indicators are reserved for permissions and listener state that Android actually exposes; expanded diagnostics explain the remaining limits.

@@ -1,0 +1,40 @@
+name: UI preview
+on:
+  push:
+    branches: [preview/setup-redesign]
+permissions:
+  contents: read
+jobs:
+  screenshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          log-accepted-android-sdk-licenses: false
+      - run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0'
+      - run: ./gradlew --no-daemon assembleDebug lint test
+      - name: Capture Personal setup in emulator
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 30
+          target: default
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: bash scripts/capture-ui.sh
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: ChromeBridge-ui-preview
+          path: |
+            ui-preview/
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/reports/
