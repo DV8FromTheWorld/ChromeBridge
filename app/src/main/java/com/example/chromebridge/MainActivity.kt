@@ -93,7 +93,7 @@ class MainActivity : Activity() {
             setPadding(dp(20), dp(24), dp(20), dp(28)); setBackgroundColor(backgroundColor)
         }
         layout.addView(text("CHROME BRIDGE", 13f, true).apply { setTextColor(accent); letterSpacing = .14f })
-        layout.addView(text(if (work) "Your work links.\nYour personal browser." else "A bridge to\nyour personal Chrome.", 28f, true))
+        layout.addView(text(if (work) "Work links, bridged." else "Personal bridge", 28f, true))
         layout.addView(text(if (work) "WORK PROFILE  →  PERSONAL" else "PERSONAL PROFILE  •  ON-DEVICE ONLY", 11f).apply { letterSpacing = .08f })
         val live = card(layout, if (work) "Work sender" else "Personal listener")
         headline = text("Checking status…", 22f, true).apply { setTextColor(accent) }; live.addView(headline)
@@ -125,7 +125,7 @@ class MainActivity : Activity() {
                 if (role.isRoleAvailable(RoleManager.ROLE_BROWSER)) startActivityForResult(role.createRequestRoleIntent(RoleManager.ROLE_BROWSER), 2)
             }
         } else {
-            val restricted = card(layout, "1  Unlock Android settings", "Installed an APK manually? Open App info, tap ⋮, then Allow restricted settings if shown. Return here to finish setup.")
+            val restricted = card(layout, "1  Check restricted settings", "Installed an APK manually? Open App info, tap the three-dot menu, then Allow restricted settings if shown. Return here to finish setup.")
             action(restricted, "Open Chrome Bridge app info") { openAppInfo() }
             restricted.addView(text("Manual check • Android doesn’t expose this setting to the app.", 12f).apply { setPadding(0, dp(12), 0, 0) })
             val permissions = card(layout, "2  Allow the connection", "These permissions let the listener open Chrome and show its running notification.")
@@ -200,7 +200,7 @@ class MainActivity : Activity() {
             summary.text = if (work) { if (verified != null) "Last verified $verified. Open a Work link to test again." else "Save your code, then open a Work link to test the connection." }
                 else if (listening) "Ready to receive Work links. Keep Chrome as your Personal browser."
                 else if (BridgeState.enabled(this)) "Restart is enabled, but the socket is not listening yet. Check permissions below."
-                else "Complete the steps below, then start the listener."
+                else "Finish setup below, then start listening."
             listenerButton?.text = if (BridgeState.enabled(this)) "Stop listener" else "Start listener"
             overlayStatus?.text = if (Settings.canDrawOverlays(this)) "✓  Display over apps allowed" else "○  Display over apps needed"
             notificationStatus?.text = if (notifications.areNotificationsEnabled() && channel?.importance != NotificationManager.IMPORTANCE_NONE) "✓  Notifications allowed" else "○  Notifications needed"
