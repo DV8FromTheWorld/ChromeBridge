@@ -1,0 +1,2 @@
+Chrome Bridge application code: MIT License, Copyright (c) 2026 Austin Keener and Chrome Bridge contributors.
+Kotlin standard library 1.9.24: Copyright JetBrains s.r.o. and Kotlin contributors. Apache License 2.0; see Apache-2.0.txt.

@@ -1,0 +1,13 @@
+.gradle/
+.gradle-home/
+.idea/
+**/build/
+local.properties
+*.iml
+*.keystore
+*.jks
+*.apk
+*.aab
+.DS_Store
+# Original private conversation is not part of the open-source project.
+LLM_HANDOFF_CONTEXT.md
