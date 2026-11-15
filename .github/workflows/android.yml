@@ -49,4 +49,50 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-
+  release:
+    name: Signed release APK
+    needs: build
+    # Never expose signing credentials to PR code, even same-repository PRs.
+    if: github.repository == 'DV8FromTheWorld/ChromeBridge' && github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          log-accepted-android-sdk-licenses: false
+      - name: Install required Android SDK packages
+        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0'
+      - name: Build with stable signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.CHROMEBRIDGE_KEYSTORE_BASE64 }}
+          CHROMEBRIDGE_KEYSTORE_PASSWORD: ${{ secrets.CHROMEBRIDGE_KEYSTORE_PASSWORD }}
+          CHROMEBRIDGE_KEY_ALIAS: ${{ secrets.CHROMEBRIDGE_KEY_ALIAS }}
+          CHROMEBRIDGE_KEY_PASSWORD: ${{ secrets.CHROMEBRIDGE_KEY_PASSWORD }}
+          CHROMEBRIDGE_KEYSTORE_PATH: ${{ runner.temp }}/chromebridge-release.jks
+        run: |
+          set -euo pipefail
+          umask 077
+          test -n "$KEYSTORE_BASE64" && test -n "$CHROMEBRIDGE_KEYSTORE_PASSWORD" && test -n "$CHROMEBRIDGE_KEY_ALIAS" && test -n "$CHROMEBRIDGE_KEY_PASSWORD"
+          trap 'rm -f "$CHROMEBRIDGE_KEYSTORE_PATH"' EXIT
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$CHROMEBRIDGE_KEYSTORE_PATH"
+          unset KEYSTORE_BASE64
+          ./gradlew --no-daemon assembleRelease
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/app-release.apk
+          sha256sum app/build/outputs/apk/release/app-release.apk > app/build/outputs/apk/release/app-release.apk.sha256
+      - name: Upload signed APK and checksum
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ChromeBridge-release-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/app-release.apk.sha256
+          if-no-files-found: error
+          retention-days: 30

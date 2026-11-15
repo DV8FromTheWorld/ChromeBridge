@@ -15,9 +15,21 @@ android {
         versionName = "1.2"
     }
 
+    // Signing is opt-in and secrets are supplied only by the trusted release job.
+    val releaseKeystore = providers.environmentVariable("CHROMEBRIDGE_KEYSTORE_PATH").orNull
+    if (releaseKeystore != null) {
+        signingConfigs.create("stableRelease") {
+            storeFile = file(releaseKeystore)
+            storePassword = providers.environmentVariable("CHROMEBRIDGE_KEYSTORE_PASSWORD").get()
+            keyAlias = providers.environmentVariable("CHROMEBRIDGE_KEY_ALIAS").get()
+            keyPassword = providers.environmentVariable("CHROMEBRIDGE_KEY_PASSWORD").get()
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (releaseKeystore != null) signingConfig = signingConfigs.getByName("stableRelease")
         }
     }
 
