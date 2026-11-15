@@ -13,6 +13,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class BridgeService : Service() {
+    companion object {
+        @Volatile private var activeServer: ServerSocket? = null
+        val isListening: Boolean get() = activeServer?.let { it.isBound && !it.isClosed } == true
+    }
     private var server: ServerSocket? = null
     @Volatile private var running = false
     private val main = Handler(Looper.getMainLooper())
@@ -35,6 +39,7 @@ class BridgeService : Service() {
             try {
                 val listener = ServerSocket().apply { reuseAddress = true; bind(InetSocketAddress("127.0.0.1", BridgeProtocol.PORT), 5) }
                 server = listener
+                activeServer = listener
                 if (!running) { listener.close(); return@thread }
                 while (running) {
                     listener.accept().use { socket ->
@@ -52,7 +57,10 @@ class BridgeService : Service() {
                             val proof = input.readUTF()
                             val result = if (!BridgeProtocol.equal(proof, BridgeProtocol.proof(expected, "client:$nonce:$url"))) "Pairing code does not match."
                                 else if (!BridgeProtocol.validUrl(url)) "Only valid HTTP(S) links are supported."
-                                else openChrome(url)
+                                else {
+                                    getSharedPreferences("bridge", MODE_PRIVATE).edit().putLong("last_received", System.currentTimeMillis()).apply()
+                                    openChrome(url)
+                                }
                             DataOutputStream(socket.getOutputStream()).apply { writeUTF(result); flush() }
                         } catch (_: Exception) { /* Malformed client must not kill the listener. */ }
                     }
@@ -93,6 +101,7 @@ class BridgeService : Service() {
     override fun onDestroy() {
         running = false
         try { server?.close() } catch (_: Exception) {}
+        if (activeServer === server) activeServer = null
         super.onDestroy()
     }
     override fun onBind(intent: Intent?): IBinder? = null

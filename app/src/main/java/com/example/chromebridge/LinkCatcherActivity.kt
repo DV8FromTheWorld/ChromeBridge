@@ -30,7 +30,10 @@ class LinkCatcherActivity : Activity() {
             runOnUiThread {
                 busy = false
                 if (isDestroyed || isFinishing) return@runOnUiThread
-                if (result.ok) finish() else showRecovery(result.message)
+                if (result.ok) {
+                    getSharedPreferences("bridge", MODE_PRIVATE).edit().putLong("last_success", System.currentTimeMillis()).apply()
+                    finish()
+                } else showRecovery(result.message)
             }
         }
     }
