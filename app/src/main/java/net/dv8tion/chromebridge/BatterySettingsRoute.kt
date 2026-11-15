@@ -1,4 +1,4 @@
-package com.example.chromebridge
+package net.dv8tion.chromebridge
 
 /** Launches settings UI only. Never changes battery settings or requests an exemption. */
 object BatterySettingsRoute {

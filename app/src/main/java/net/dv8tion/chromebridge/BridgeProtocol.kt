@@ -1,4 +1,4 @@
-package com.example.chromebridge
+package net.dv8tion.chromebridge
 
 import java.net.URI
 

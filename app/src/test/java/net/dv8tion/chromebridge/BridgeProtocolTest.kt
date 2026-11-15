@@ -1,4 +1,4 @@
-package com.example.chromebridge
+package net.dv8tion.chromebridge
 import org.junit.Assert.*
 import org.junit.Test
 class BridgeProtocolTest {

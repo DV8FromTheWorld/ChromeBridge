@@ -39,3 +39,25 @@ Device policy, OEM, Android version and battery settings can change results. Rep
 - Install/pause/hide companion: availability refreshes, with no claim about its permissions/default browser.
 - Save code: does not show pairing verified until an authenticated link succeeds. Changing the Work code clears its prior success timestamp.
 - Open Work link: receipt/acknowledgement timestamps update; only timestamps, no URLs, persist.
+
+## Package migration (v1.3)
+
+- Verify APK application ID is `net.dv8tion.chromebridge`.
+- Remove old `com.example.chromebridge` from both profiles; install the new APK in both.
+- Repeat permissions, pairing, default-link handling, forwarding and personal recovery checks.
+- Verify Open Personal launches the new package in the other profile, and settings shortcuts target the new package.
+- This migration is not an in-place update and does not preserve app data.
+
+## Redesigned setup screen
+- Verify Personal first screen at normal and large font sizes in light/dark mode. Cards scroll without clipped text or buttons; all controls have at least 48dp touch targets.
+- App info is the first setup action. It opens this profile's Chrome Bridge details page; no setting is changed automatically. If Android shows the overflow action, the user can choose Allow restricted settings. No completed badge is fabricated for that manually checked setting.
+- Return from app info, overlay, notification and battery settings without changing anything: indicators remain truthful and controls still work. Grant/revoke permissions and return: indicators refresh.
+- Show/hide diagnostics repeatedly, then rotate and reopen: no crash, no automatic listener start when explicitly stopped.
+- Start and Stop use one live-state-aware button. Socket state and restart preference remain distinct.
+- Pairing code copying still works; code remains selectable for manual entry. Work keeps its own setup and default-browser action.
+
+### Redesign verification (2026-11-15)
+- `assembleDebug lint test`: passed after final UI wording change; lint reported no issues; 16 JVM tests passed in each debug/release variant.
+- Development emulator: official AOSP API30 x86_64, 480×800 at 160dpi, software emulation because the host has no `/dev/kvm`. Inspected actual Personal top and scrolled permissions/battery screenshots: cards, text and buttons rendered without clipping. Iterated the oversized headline into a compact single-line title so setup is visible sooner, and replaced the overflow glyph with explicit three-dot-menu wording.
+- Tapped the actual App info shortcut and verified Android's Chrome Bridge App info screen. No permission or battery setting was changed. API30 does not expose the later sideloaded-app restricted-settings menu, so that user-controlled menu remains an Android-version/device check.
+- Earlier Google APIs/software-emulator attempts had Android framework crashes and SystemUI ANR dialogs; the lightweight dev image eventually produced clean captures after dismissing a SystemUI ANR. This is limited visual/setup-path verification, not full device reliability acceptance. Cross-profile forwarding, reboot recovery, OEM battery behavior and current Android runtime notification prompts still require the device checklist above.

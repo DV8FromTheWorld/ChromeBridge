@@ -56,7 +56,7 @@ These behaviors follow platform restrictions, not a claim that overlay permissio
 - Only bounded HTTP(S) links are accepted; non-web schemes and credential-bearing URLs are rejected. Chrome is explicitly targeted, with no recursive generic-browser fallback.
 - A compromised/rooted OS is outside the threat model. Another local process may deny service by occupying the port. App UI/clipboard privacy depends on Android.
 - Success means an authenticated launch request was accepted, not proof Android visibly displayed Chrome.
-- The APK is debug-signed for sideload testing, not a Play Store release.
+- CI produces a stable-key-signed APK for sideloading, not a Play Store release. The separate debug APK is for testing only.
 
 ## Build / test
 
@@ -83,3 +83,17 @@ Application code: [MIT](LICENSE). The original user-supplied scaffold and subseq
 - [Force-stop behavior](https://developer.android.com/about/versions/15/behavior-changes-all#stopped-state)
 - [Battery restrictions](https://developer.android.com/topic/performance/background-optimization#user-initiated-restrictions)
 - [User stopping foreground services](https://developer.android.com/develop/background-work/services/fgs/handle-user-stopping)
+
+## v1.3 package migration
+
+The package is now `net.dv8tion.chromebridge`, replacing only the old
+`com.example` prefix. Android treats this as a new app, even with the same
+release signing key: it cannot update `com.example.chromebridge` in place or
+automatically transfer its settings. Stop and uninstall the old copy in **both**
+profiles before setting up v1.3 (especially the personal listener, which otherwise
+can keep port 45678 occupied). Install the same v1.3 APK in both profiles, grant
+permissions again, pair again, and select the new Work app for links. Future
+updates retain this new package and the existing stable signing key.
+
+### Personal setup
+The Personal screen groups setup into four cards: Android restricted settings, permissions, battery usage and Work pairing. If you installed the APK manually, begin with **Open Chrome Bridge app info**, then use **⋮ → Allow restricted settings** if Android offers it. Return to Chrome Bridge to grant its requested permissions. This shortcut does not change any settings itself, and the app does not claim it can verify the restricted-settings switch. Battery Unrestricted is also a manual check. Live indicators are reserved for permissions and listener state that Android actually exposes; expanded diagnostics explain the remaining limits.

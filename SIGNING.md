@@ -31,6 +31,10 @@ The first stable release uses a new certificate. Uninstall the old debug copy in
 both profiles, install the same new release APK in both, and pair them again. Future
 stable releases must retain this signing certificate and increment `versionCode`.
 
+v1.3 also changes the application ID to `net.dv8tion.chromebridge`. It installs
+as a separate app, not an update to the former package. See the README migration
+steps; settings and pairing are not transferred automatically.
+
 ## Local release builds
 
 Set these environment variables in a secure shell/session without printing them:

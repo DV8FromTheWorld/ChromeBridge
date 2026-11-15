@@ -1,4 +1,4 @@
-package com.example.chromebridge
+package net.dv8tion.chromebridge
 
 /** Labels intentionally separate observable facts from unverified setup claims. */
 object SetupStatus {

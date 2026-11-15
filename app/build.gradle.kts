@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chromebridge"
+    namespace = "net.dv8tion.chromebridge"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.chromebridge"
+        applicationId = "net.dv8tion.chromebridge"
         minSdk = 30
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.3"
     }
 
     // Signing is opt-in and secrets are supplied only by the trusted release job.
